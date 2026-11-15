@@ -1,0 +1,8 @@
+.character{overflow:visible}.figure{transform-origin:110px 275px;animation:breath 2.1s ease-in-out 2}.head{transform-origin:110px 166px;animation:listeningNod .9s ease-out both}.eye{transform-box:fill-box;transform-origin:center;animation:blink 4.2s ease-in-out both}.character[data-speaking=true] .mouth{transform-box:fill-box;transform-origin:center;animation:speak .48s ease-in-out 4}.character[data-speaking=true] .head{animation:speakingNod 1.7s ease-in-out 2}
+@keyframes breath{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-1px) scaleY(1.008)}}
+@keyframes listeningNod{0%{transform:rotate(-2deg)}55%{transform:rotate(1deg)}100%{transform:rotate(0)}}
+@keyframes speakingNod{0%,100%{transform:rotate(0)}45%{transform:rotate(-1.2deg)}75%{transform:rotate(.7deg)}}
+@keyframes blink{0%,38%,42%,83%,87%,100%{transform:scaleY(1)}40%,85%{transform:scaleY(.12)}}
+@keyframes speak{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.6)}}
+:global([data-reduced-motion=true]) .character *{animation:none!important}
+@media(prefers-reduced-motion:reduce){.character *{animation:none!important}}

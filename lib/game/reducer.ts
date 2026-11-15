@@ -1,6 +1,7 @@
 import { bookCase } from '../../content/cases/buku-rusak.ts';
 import type { GameState, GameEvent } from './types.ts';
 import { hasInvestigation, canDecide, reflectionsComplete, expectedMilestones } from './selectors.ts';
+import { getInvestigationFocus } from './guided.ts';
 import { validateSave } from './storage.ts';
 const unique=(ids:string[],id:string)=>ids.includes(id)?ids:[...ids,id];
 export function initialState():GameState{return {
@@ -10,15 +11,22 @@ const update=(s:GameState,patch:Partial<GameState>):GameState=>{const next={...s
 export function reducer(s:GameState,e:GameEvent):GameState{
  switch(e.type){
  case 'RESET_CASE':case 'START_CASE':return initialState();
- case 'RESTORE_SAVE':return validateSave(e.save)??s;
+ case 'RESTORE_SAVE':{const restored=validateSave(e.save);return restored?restored.phase==='investigation'?{...restored,locationId:getInvestigationFocus(restored).location.id}:restored:s;}
  case 'ADVANCE_DIALOGUE':{
  if(s.phase!=='intro')return s;
  const i=bookCase.nodes.findIndex(n=>n.id===s.dialogueNodeId);
  if(i===bookCase.nodes.length-1)return update(s,{phase:'investigation',dialogueNodeId:'investigation-start',feedback:'Cari empat bukti di tiga lokasi. Pilih objek yang ingin kamu periksa.'});
  const node=bookCase.nodes[i+1];return update(s,{dialogueNodeId:node.id,historyIds:unique(s.historyIds,node.id)});}
- case 'VISIT_LOCATION':return s.phase==='investigation'&&bookCase.locations.some(l=>l.id===e.locationId)?update(s,{locationId:e.locationId,feedback:''}):s;
+ case 'VISIT_LOCATION':return s.phase==='investigation'&&bookCase.locations.some(l=>l.id===e.locationId)?update(s,{locationId:e.locationId,dialogueNodeId:'investigation-start',feedback:''}):s;
+ case 'NEXT_INVESTIGATION':{
+ if(s.phase!=='investigation'||!getInvestigationFocus(s).collected)return s;
+ const next=bookCase.requiredEvidence.find(id=>!s.evidenceIds.includes(id));if(!next)return s;
+ const location=bookCase.locations.find(l=>l.hotspots.some(h=>h.evidenceId===next))!;
+ return update(s,{locationId:location.id,dialogueNodeId:'investigation-start',feedback:''});}
  case 'COLLECT_EVIDENCE':{
  if(s.phase!=='investigation')return s;
+ const next=bookCase.requiredEvidence.find(id=>!s.evidenceIds.includes(id));
+ if(e.evidenceId!==next&&!s.evidenceIds.some(id=>id===e.evidenceId))return s;
  const h=bookCase.locations.find(l=>l.id===s.locationId)?.hotspots.find(h=>h.evidenceId===e.evidenceId);
  if(!h)return s;
  return update(s,{evidenceIds:s.evidenceIds.includes(h.evidenceId)?s.evidenceIds:[...s.evidenceIds,h.evidenceId],dialogueNodeId:h.dialogue.id,historyIds:unique(s.historyIds,h.dialogue.id),feedback:`${h.dialogue.text} Bukti ${h.evidenceId} sudah disimpan di Berkas Bukti.`});}

@@ -8,3 +8,25 @@
 @media(max-width:600px){.statementNav{flex-wrap:wrap}.statementNav>div{order:-1;width:100%;justify-content:center;gap:8px}.statementNav>button:last-child{margin-left:auto}.statementNav>div>button{width:44px}.testimonyScene{min-height:530px}.objects button{font-size:18px}.naraCard>p{font-size:18px!important}.sidebar{grid-template-columns:1fr}.missionCard{grid-row:auto}.historyButton,.guideLink,.sideNote{grid-column:1}.historyButton{font-size:14px}.sideNote{font-size:13px}.guideLink{font-size:14px}.naraCard{padding:20px}.missionCard li{font-size:16px}.missionCard .eyebrow{font-size:10px}.mainHeading>button{font-size:14px}.testimonyActions>button:first-child{font-size:16px}}
 
 @media(max-width:600px){.testimonyScene{min-height:0;grid-template-rows:auto 200px;gap:10px;padding-bottom:16px}.witness{height:200px;max-height:none;margin:0 -5px 0 0;overflow:hidden}.witness>svg{margin-bottom:-30px}.witness>span{flex-shrink:0}.statementNav{margin-top:4px}}
+
+/* Storytelling motion: short entrances, a gentle camera, and readable pauses. */
+.introScene>img{animation:sceneCamera 1.6s cubic-bezier(.2,.7,.3,1) both;transform-origin:62% 52%}
+.introCharacters>svg{animation:castEntrance .65s cubic-bezier(.2,.9,.25,1) both}.introCharacters>svg:nth-child(2){animation-delay:.1s}.introCharacters>svg:nth-child(3){animation-delay:.2s}
+.sceneTitle{animation:titleReveal .7s .15s both}.sceneLocation{animation:inkEntrance .5s .3s both}
+.investigationScene>img{animation:locationCamera .65s cubic-bezier(.2,.8,.25,1) both;transform-origin:center}.locationCharacter{animation:castEntrance .55s .1s both}
+.locationCaption{animation:inkEntrance .4s .12s both}.hotspot>span{animation:hotspotRing 1.1s .45s 2}.hotspot:hover>span{background:#F7D985}
+.dialogueAvatar>svg{animation:portraitArrival .35s ease-out both}.dialogueContent>p{animation:inkEntrance .3s ease-out both}
+.testimonyWords blockquote{animation:testimonyReveal .42s cubic-bezier(.2,.8,.3,1) both}.witness>svg{animation:portraitArrival .42s ease-out both}
+.mainHeading h1{animation:inkEntrance .4s ease-out both}.correctTag{animation:inkEntrance .35s both}
+.resultSeal{animation:sealStamp .7s cubic-bezier(.2,1.15,.4,1) both}.achievements>div{animation:achievementReveal .45s .1s both}.achievements>div:nth-child(2){animation-delay:.2s}.achievements>div:nth-child(3){animation-delay:.3s}.achievements>div:nth-child(4){animation-delay:.4s}.score>strong{animation:inkEntrance .5s .15s both}
+.evidenceCard{animation:inkEntrance .35s both}.evidenceCard:nth-child(2){animation-delay:.06s}.evidenceCard:nth-child(3){animation-delay:.12s}.evidenceCard:nth-child(4){animation-delay:.18s}.evidenceCard:nth-child(5){animation-delay:.24s}
+@keyframes sceneCamera{from{transform:scale(1.09);filter:brightness(.9)}to{transform:scale(1);filter:brightness(1)}}
+@keyframes locationCamera{from{opacity:.6;transform:scale(1.045) translateX(5px)}to{opacity:1;transform:scale(1) translateX(0)}}
+@keyframes castEntrance{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes titleReveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes inkEntrance{from{opacity:.3;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes portraitArrival{from{opacity:.5;transform:translateY(6px) rotate(-2deg)}to{opacity:1;transform:translateY(0) rotate(0)}}
+@keyframes hotspotRing{0%,100%{box-shadow:0 0 0 0 #F4C95D00}45%{box-shadow:0 0 0 7px #F4C95D35}}
+@keyframes testimonyReveal{from{opacity:.2;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes sealStamp{from{opacity:0;transform:scale(1.18) rotate(-9deg)}65%{opacity:1;transform:scale(.98) rotate(1deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes achievementReveal{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}

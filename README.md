@@ -1,4 +1,4 @@
-﻿# Justice Room
+# Justice Room
 
 Petualangan cerita 2D berbahasa Indonesia untuk belajar PPKn kelas 4–6 SD. Satu episode lengkap: **Misteri Buku Kelas yang Rusak**. Spesifikasi produk berada di [JUSTICE_ROOM_SPEC.md](JUSTICE_ROOM_SPEC.md); instruksi proyek di [AGENTS.md](AGENTS.md).
 
@@ -51,7 +51,7 @@ Tes mencakup permainan lengkap, keberatan salah dan perbaikannya, keputusan sala
 - `lib/game/reducer.ts`: transisi deterministik dengan pemeriksaan prasyarat setiap event.
 - `lib/game/selectors.ts`: prasyarat dan penilaian milestone unik.
 - `lib/game/storage.ts`: validasi, whitelist data, penyimpanan, reset per kasus, dan settings terpisah.
-- `components/game/`: interaksi, presentasi adegan, panel bukti/keputusan/refleksi, dialog, dan hydration penyimpanan.
+- `components/game/`: interaksi, presentasi adegan, frame cerita, pilihan beralasan, subtitle, dialog, dan hydration penyimpanan.
 - `components/ui/`: dialog dengan focus trap/focus return, settings, identitas visual, ilustrasi karakter original.
 - `app/`: halaman App Router; halaman statis memakai Server Components dan interaksi dibatasi ke komponen client.
 
@@ -66,6 +66,24 @@ Jika penyimpanan penuh/diblokir, permainan tetap berjalan dalam memori dan membe
 ## Aksesibilitas
 
 Gunakan Tab/Shift+Tab, Enter/Spasi, dan Escape. Hotspot berupa tombol dan memiliki alternatif daftar. Dialog menjaga fokus di dalam serta mengembalikannya ke pemicu. Pengaturan menyediakan teks langsung, gerakan minimal, dan mute; preferensi reduced motion sistem dihormati. Bunyi pendek bersifat tambahan, nonaktif secara default dan hanya dimainkan setelah aksi pemain. Tidak ada rekaman suara atau musik latar.
+
+## Alur cerita terpandu
+
+Permainan utama memakai satu frame setinggi viewport: panggung animasi, tokoh, subtitle dan tombol aksi utama. Tidak ada panel samping atau deretan tombol lokasi pada alur utama. Tombol Berkas Bukti dan Menu Kasus menyediakan akses sekunder ke pengaturan, riwayat, petunjuk, panduan dan tinjauan bukti.
+
+Investigasi berurutan: E01 catatan peminjaman -> E02 buku basah -> E03 foto Sari -> E04 keterangan Raka. Setelah memeriksa satu objek, pemain membaca penjelasan dan batas bukti pada subtitle, lalu memilih Petunjuk Berikutnya. Penemuan tidak otomatis melewati penjelasan. Tinjau Petunjuk pada menu membuka kembali petunjuk yang telah dimiliki tanpa menambah nilai. Save lama tetap dapat dipulihkan; fokus dikembalikan ke petunjuk yang sedang dibaca atau yang belum ditemukan.
+
+Musyawarah menampilkan S01 -> S02 -> S03 -> S04. Dugaan S02 perlu diperiksa dengan bukti dan alasan; S03 perlu diperjelas melalui Tanya Lagi untuk memperoleh E05. Pilihan bukti dan alasan muncul bergantian dalam panggung, demikian juga solusi dan alasannya. Konsekuensi dibaca dulu, kemudian refleksi ditampilkan satu pertanyaan per langkah. Jawaban salah tetap dapat diperbaiki.
+
+`lib/game/guided.ts` memilih fokus dan membagi teks menjadi halaman subtitle pendek tanpa menghapus kata. `StoryCaption.tsx` menjaga tombol Lanjutkan sampai halaman penjelasan selesai. `CaseScene.tsx`, `ChoiceStage.tsx` dan `guided.module.css` membentuk frame. Fokus keyboard berpindah ke pilihan baru saat tahap pertanyaan berubah. Permainan diuji pada lebar 360, 768 dan 1440 piksel; opsi solusi juga diuji pada ponsel 360?640. Dialog bantuan/bukti yang sengaja dibuka tetap dapat discroll.
+
+## Animasi cerita
+
+Kamera adegan, gerak bicara, kedipan tokoh, bukti yang diperbesar dan perayaan capaian menggunakan CSS/SVG lokal. Rekonstruksi E05 sekarang menjadi bagian panggung yang sama dengan subtitle, dan tetap terlihat sampai pemain melanjutkan cerita. Rekonstruksi hanya menunjukkan botol terguling, air, dan buku; tidak menunjukkan siapa yang menyenggolnya.
+
+Efek singkat dapat dilewati dengan Lewati Animasi. Pengaturan Kurangi gerakan dan preferensi sistem mematikan gerakan dekoratif, sementara gambar serta teks cerita tetap tersedia. Tidak ada timer membaca wajib, kilatan, atau guncangan layar.
+
+`lib/game/presentation.ts` menyimpan cue sementara terpisah dari state kasus. Cue mengikuti hasil reducer yang sah; bukti ulang tidak memutar ulang temuan. Cue tidak masuk localStorage dan tidak diputar ulang saat restore. Tidak ada dependensi atau layanan tambahan.
 
 ## Menambahkan kasus
 

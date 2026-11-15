@@ -21,7 +21,7 @@ export type GameState = {
  hintLevel:number;updatedAt:string;
 };
 export type GameEvent =
- | {type:'START_CASE'|'ADVANCE_DIALOGUE'|'ENTER_TESTIMONY'|'PRESS_STATEMENT'|'ENTER_DECISION'|'BACK_INVESTIGATION'|'FINISH_CASE'|'RESET_CASE'|'HINT'}
+ | {type:'START_CASE'|'ADVANCE_DIALOGUE'|'ENTER_TESTIMONY'|'PRESS_STATEMENT'|'ENTER_DECISION'|'BACK_INVESTIGATION'|'NEXT_INVESTIGATION'|'FINISH_CASE'|'RESET_CASE'|'HINT'}
  | {type:'VISIT_LOCATION';locationId:string}
  | {type:'COLLECT_EVIDENCE';evidenceId:string}
  | {type:'SELECT_STATEMENT';statementId:string}

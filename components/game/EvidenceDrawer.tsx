@@ -1,0 +1,7 @@
+'use client';
+import {BookOpen,Camera,ClipboardList,MessageCircle,Clock3} from 'lucide-react';
+import {bookCase} from '@/content/cases/buku-rusak';
+import type {EvidenceId} from '@/lib/game/types';
+import s from './game.module.css';
+export function EvidenceIcon({id,size=26}:{id:string;size?:number}){const Icon=id==='E01'?ClipboardList:id==='E02'?BookOpen:id==='E03'?Camera:MessageCircle;return <Icon size={size} strokeWidth={1.7}/>;}
+export function EvidenceDrawer({evidenceIds}:{evidenceIds:EvidenceId[]}){return <><p className={s.muted}>Baca isi dan batas setiap bukti. Punya petunjuk belum tentu tahu seluruh cerita.</p><div className={s.evidenceList}>{bookCase.evidence.map(e=><article key={e.id} className={`${s.evidenceCard} ${!evidenceIds.includes(e.id)?s.unfound:''}`}><div className={s.evidenceTitle}><span className={s.evidenceIcon}><EvidenceIcon id={e.id}/></span><div><span className={s.tiny}>{e.id} · {e.kind}</span><h3>{evidenceIds.includes(e.id)?e.title:'Belum ditemukan'}</h3></div></div>{evidenceIds.includes(e.id)?<><p>{e.description}</p><dl><dt>Sumber</dt><dd>{e.source}</dd><dt><Clock3 size={13}/> Waktu</dt><dd>{e.observedAt}</dd></dl><div className={s.limitation}><strong>Batas bukti</strong><p>{e.limitation}</p></div></>:<p>{e.id==='E05'?'Dengarkan lebih lanjut cerita Sari saat musyawarah.':'Periksa objek dan dengarkan teman di lokasi investigasi.'}</p>}</article>)}</div></>;}

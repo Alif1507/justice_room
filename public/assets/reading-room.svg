@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" fill="none">
+<defs><pattern id="grain" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".5" fill="#17324D" opacity=".07"/></pattern><linearGradient id="wall" x2="0" y2="1"><stop stop-color="#F4E9CB"/><stop offset="1" stop-color="#E4D8B6"/></linearGradient></defs>
+<path fill="url(#wall)" d="M0 0h900v650H0z"/><path fill="#D5C49B" d="M0 490h900v160H0z"/><path fill="#B69F79" d="M0 489h900v11H0z"/>
+<path d="m0 563 900 20M210 500l-90 150m350-150 10 150m250-150 120 150" stroke="#B7A282" stroke-width="3"/>
+<rect x="38" y="54" width="249" height="292" rx="7" fill="#A67D51" stroke="#17324D" stroke-width="5"/><path fill="#D1EBE7" d="M49 66h227v267H49z"/>
+<path d="M49 235q55-100 107-42 47-137 120-75v215H49" fill="#9FBD8C"/><path d="M50 284q75-102 138-36 46-61 88-19v104H50" fill="#6D9C77"/>
+<path d="M160 64v272M48 201h231" stroke="#A67D51" stroke-width="10"/><path d="M30 342h264" stroke="#17324D" stroke-width="7" stroke-linecap="round"/>
+<path d="M6 24h107v40Q76 135 36 175L9 170" fill="#D7875E" stroke="#17324D" stroke-width="4"/><path d="m278 26-56-2q-14 97 56 147h35V24" fill="#D7875E" stroke="#17324D" stroke-width="4"/><path d="M18 162h39m211 0h32" stroke="#F4C95D" stroke-width="9"/>
+<rect x="336" y="49" width="322" height="218" rx="5" fill="#AA8350" stroke="#17324D" stroke-width="5"/><rect x="349" y="62" width="296" height="192" rx="2" fill="#366660"/>
+<text x="496" y="106" text-anchor="middle" fill="#F9F1D9" font-family="Georgia,serif" font-size="25">Pojok Baca Kita</text><path d="M389 119h214" stroke="#F4C95D" stroke-width="2"/>
+<path d="M391 148q32-10 57 3v55q-24-13-57-3zm57 3q28-13 57-3v55q-28-9-57 3z" stroke="#F9F1D9" stroke-width="3"/><path d="m557 162 10 11 24-29m-39 48h55" stroke="#F4C95D" stroke-width="4" stroke-linecap="round"/>
+<rect x="716" y="59" width="115" height="123" rx="4" fill="#FDF4DF" stroke="#17324D" stroke-width="4"/><text x="774" y="87" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="bold" fill="#17324D">SENIN</text><text x="774" y="142" text-anchor="middle" font-family="Georgia,serif" font-size="45" fill="#BC3544">12</text><path d="M737 49v18m74-18v18" stroke="#17324D" stroke-width="5" stroke-linecap="round"/>
+<rect x="367" y="306" width="353" height="231" rx="5" fill="#BE9464" stroke="#17324D" stroke-width="5"/><path d="M381 321h325v91H381zM381 428h325v91H381z" fill="#81694B"/>
+<g stroke="#17324D" stroke-width="3"><path d="M390 341h28v67h-28z" fill="#5B9990"/><path d="M421 333h20v75h-20z" fill="#E5B959"/><path d="m450 333 20-5 17 74-21 5z" fill="#C76C5E"/><path d="M491 349h30v59h-30z" fill="#E9D9AB"/><path d="M528 339h20v69h-20z" fill="#7193AB"/><path d="M555 344h31v64h-31z" fill="#C88A60"/><path d="M597 330h25v78h-25z" fill="#E3BD66"/><path d="M628 345h30v63h-30z" fill="#75947B"/><path d="M662 335h32v73h-32z" fill="#B96B6B"/>
+<path d="M396 449h25v66h-25z" fill="#D7BC71"/><path d="M426 444h27v71h-27z" fill="#B47876"/><path d="M458 458h20v57h-20z" fill="#E4D1A8"/><path d="m490 450 22-4 11 66-22 4z" fill="#688C99"/><path d="M539 483h69v16h-69zm5 16h71v16h-71z" fill="#DFB775"/><path d="M638 445h18v70h-18z" fill="#C97754"/><path d="M662 453h29v62h-29z" fill="#6E9B89"/></g>
+<path d="M628 300v-40q0-9 10-9h16q10 0 10 9v40z" fill="#98C7C3" stroke="#17324D" stroke-width="4"/><path d="M636 242h20v10h-20" fill="#F5DC9B" stroke="#17324D" stroke-width="3"/><path d="M635 275h21" stroke="#E4F0DE" stroke-width="5"/>
+<path d="M759 497q-20-90 17-139 40 50 18 139" fill="#6C9672" stroke="#17324D" stroke-width="4"/><path d="M781 486q-1-96 51-108 2 68-51 108" fill="#8CA66E" stroke="#17324D" stroke-width="4"/><path d="M775 480q-8-69-56-82-5 57 56 82" fill="#85A47C" stroke="#17324D" stroke-width="4"/><path d="M746 478h70l-9 66h-52z" fill="#CD805F" stroke="#17324D" stroke-width="4"/>
+<path d="M53 469h268l22 33H37z" fill="#DDB787" stroke="#17324D" stroke-width="5"/><path d="M65 503v102m249-102v102" stroke="#17324D" stroke-width="14"/><path d="M69 504v100m241-100v100" stroke="#AA8056" stroke-width="8"/>
+<path d="m108 458 82-18 55 20-76 23z" fill="#FFF5D9" stroke="#17324D" stroke-width="3"/><path d="m169 483-2-24m-59-1 59 1 23-19" stroke="#17324D" stroke-width="2"/><path d="m206 473 48-12 27 8-49 13z" fill="#C36C59" stroke="#17324D" stroke-width="3"/>
+<path d="M3 615q200-39 386 3 208 34 511-9v41H0" fill="#E5CC9E"/>
+<path fill="url(#grain)" d="M0 0h900v650H0z"/>
+</svg>

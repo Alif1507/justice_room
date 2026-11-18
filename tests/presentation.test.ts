@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {initialPresentation,presentationReducer} from '../lib/game/presentation.ts';
 import {score} from '../lib/game/selectors.ts';
 import type {GameEvent} from '../lib/game/types.ts';
-const run=(events:GameEvent[])=>events.reduce(presentationReducer,initialPresentation());
+const run=(events:GameEvent[])=>events.reduce((p,e)=>presentationReducer(p,e),initialPresentation());
 const intro:GameEvent[]=Array.from({length:4},()=>({type:'ADVANCE_DIALOGUE'}));
 const investigation:GameEvent[]=[...intro,{type:'COLLECT_EVIDENCE',evidenceId:'E01'},{type:'VISIT_LOCATION',locationId:'pojok'},{type:'COLLECT_EVIDENCE',evidenceId:'E02'},{type:'COLLECT_EVIDENCE',evidenceId:'E03'},{type:'VISIT_LOCATION',locationId:'koridor'},{type:'COLLECT_EVIDENCE',evidenceId:'E04'}];
 test('new evidence produces a presentation cue without changing game scoring',()=>{

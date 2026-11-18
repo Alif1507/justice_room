@@ -1,6 +1,6 @@
 # Justice Room
 
-Petualangan cerita 2D berbahasa Indonesia untuk belajar PPKn kelas 4–6 SD. Satu episode lengkap: **Misteri Buku Kelas yang Rusak**. Spesifikasi produk berada di [JUSTICE_ROOM_SPEC.md](JUSTICE_ROOM_SPEC.md); instruksi proyek di [AGENTS.md](AGENTS.md).
+Petualangan cerita 2D berbahasa Indonesia untuk belajar PPKn kelas 4–6 SD. Tiga episode lengkap: **Misteri Buku Kelas yang Rusak**, **Giliran Piket yang Terlupakan**, dan **Semua Boleh Bermain**. Semuanya dapat dimainkan ulang. Spesifikasi produk berada di [JUSTICE_ROOM_SPEC.md](JUSTICE_ROOM_SPEC.md); instruksi proyek di [AGENTS.md](AGENTS.md).
 
 ## Menjalankan
 
@@ -26,11 +26,13 @@ npm start
 ## Bermain
 
 - `/`: beranda, mulai bermain, lanjutkan bila ada progres, cara bermain, dan pengaturan.
-- `/kasus`: satu kasus tersedia; episode berikutnya diberi label **Segera hadir**.
+- `/kasus`: tiga episode dengan pembukaan berurutan, progres masing-masing, serta Mainkan Ulang pada episode yang selesai.
 - `/kasus/buku-rusak`: pengantar dan tutorial, investigasi, musyawarah, keputusan beralasan, refleksi, dan hasil.
+- `/kasus/piket-terlupakan`: jadwal piket, aktivitas mencocokkan tugas, kesepakatan waktu dan kerja sama.
+- `/kasus/semua-boleh-bermain`: kebutuhan bermain, aktivitas aturan giliran, toleransi dan persatuan.
 - `/panduan`: tujuan belajar, panduan pendamping, pembahasan, penilaian, dan privasi.
 
-Empat bukti awal membuka musyawarah. E05 hanya diperoleh melalui **Tanya Lagi pada S03**. S02 dapat diuji menggunakan **E04 + alasan Raka melihat buku kering pukul 09.00**. E05 dan penyelesaian S02 membuka keputusan. Solusi bersama dengan alasan urutan tumpahan membuka refleksi; tiga refleksi wajib membuka hasil. Catatan bebas bersifat opsional dan tidak dinilai.
+**Episode 1:** Empat bukti awal membuka musyawarah. E05 hanya diperoleh melalui **Tanya Lagi pada S03**. S02 dapat diuji menggunakan **E04 + alasan Raka melihat buku kering pukul 09.00**. E05 dan penyelesaian S02 membuka keputusan. Solusi bersama dengan alasan urutan tumpahan membuka refleksi; tiga refleksi wajib membuka hasil. Catatan bebas bersifat opsional dan tidak dinilai.
 
 Tidak ada nyawa atau penghitung waktu. Pilihan salah mendapat pembahasan dan dapat diperbaiki. Skor berasal dari milestone unik, maksimal 100; pengulangan tidak menambah poin. Cerita tidak mengungkap siapa yang menyenggol botol, karena bukti tidak mengidentifikasinya. Materi merupakan usulan yang belum memperoleh validasi kurikulum dari guru.
 
@@ -46,7 +48,7 @@ Tes mencakup permainan lengkap, keberatan salah dan perbaikannya, keputusan sala
 
 ## Arsitektur
 
-- `content/cases/buku-rusak.ts`: tokoh, dialog, lokasi, bukti, pernyataan, pilihan, refleksi, dan validator referensi.
+- `content/cases/`: tiga definisi episode dengan tokoh, dialog, lokasi, bukti, pernyataan, aktivitas, pilihan, refleksi, presentasi dan validator referensi. `index.ts` mendaftarkan episode yang dapat dimainkan.
 - `lib/game/types.ts`: kontrak state, konten, settings, dan event.
 - `lib/game/reducer.ts`: transisi deterministik dengan pemeriksaan prasyarat setiap event.
 - `lib/game/selectors.ts`: prasyarat dan penilaian milestone unik.
@@ -59,7 +61,7 @@ CSS Modules untuk tampilan komponen dan satu stylesheet global untuk token/reset
 
 ## Penyimpanan dan privasi
 
-Hanya localStorage: `justice-room:save:buku-rusak` dan `justice-room:settings`. Save mencakup `schemaVersion` dan `caseContentVersion`. Data dibaca setelah mount; autosave menunggu hydration. Restore memvalidasi enum, ID, versi, milestone, dan prasyarat fase. Save rusak tidak ditimpa sebelum konfirmasi reset. Reset hanya menghapus progres/catatan kasus terkait; settings dan data browser lain tetap tersimpan.
+Hanya localStorage: `justice-room:save:<caseId>` untuk tiap episode, `justice-room:progress` untuk riwayat tamat, dan `justice-room:settings` untuk pengaturan bersama. ID episode: `buku-rusak`, `piket-terlupakan`, dan `semua-boleh-bermain`. Save mencakup `schemaVersion` dan `caseContentVersion`. Data dibaca setelah mount; autosave menunggu hydration. Restore memvalidasi enum, ID, versi, milestone, dan prasyarat fase. Save rusak tidak ditimpa sebelum konfirmasi reset. Reset hanya menghapus progres/catatan kasus terkait; settings dan data browser lain tetap tersimpan.
 
 Jika penyimpanan penuh/diblokir, permainan tetap berjalan dalam memori dan memberi pemberitahuan. Progres hanya tersedia pada browser/perangkat yang sama. Tidak ada akun, server data, analytics, sinkronisasi antarperangkat, atau pengiriman catatan. Jangan memasukkan informasi pribadi ke catatan. Penghapusan data browser dapat menghapus progres. Tidak ada service worker; **dukungan luring penuh tidak dijanjikan**.
 
@@ -85,15 +87,27 @@ Efek singkat dapat dilewati dengan Lewati Animasi. Pengaturan Kurangi gerakan da
 
 `lib/game/presentation.ts` menyimpan cue sementara terpisah dari state kasus. Cue mengikuti hasil reducer yang sah; bukti ulang tidak memutar ulang temuan. Cue tidak masuk localStorage dan tidak diputar ulang saat restore. Tidak ada dependensi atau layanan tambahan.
 
+## Mainkan ulang
+
+Tombol **Mainkan Ulang Episode** tersedia langsung pada hasil dan di Menu Kasus. Pada Papan Kasus, episode selesai menyediakan **Mainkan Ulang** dan **Lihat Hasil**. Konfirmasi diperlukan sebelum menghapus progres dan catatan episode yang dipilih. Episode lain dan pengaturan tidak dihapus. Permainan ulang dimulai dari pengantar dengan bukti, aktivitas, refleksi dan skor kosong.
+
+Episode 2 memiliki aktivitas mencocokkan jadwal terbaru sebelum E02 bisa disimpan. Dalam keberatan jadwal, E02 maupun E04 diterima bersama alasan waktu yang disepakati karena keduanya mendukung kesimpulan tersebut. Episode 3 memiliki aktivitas aturan giliran sebelum E03 bisa disimpan. Pemain membaca sumber dulu, lalu memilih dan memeriksa jawaban. Jawaban yang kurang sesuai mendapat penjelasan dan bisa diperbaiki. Penyelesaian aktivitas tersimpan secara lokal, tidak menambah skor terpisah, dan divalidasi saat restore. Save Episode 1 lama tanpa field aktivitas tetap didukung.
+
 ## Menambahkan kasus
 
-1. Buat data kasus dengan `CaseDefinition`: ID stabil, versi, tokoh original, dialog, tiga atau lebih lokasi bila diperlukan, sumber dan batas bukti, pernyataan, pasangan bukti–alasan, solusi, dan refleksi.
-2. Jalankan `validateCase` dan tambahkan tes untuk ID/referensi/ending serta perjalanan lengkap kasus itu.
-3. Definisikan prasyarat dan event reducer sesuai konflik kasus. Engine saat ini sengaja berfokus pada satu kasus; jangan sekadar mengganti nama dan menganggap kasus baru sudah didukung.
-4. Tambahkan selector, validator save, key storage per kasus, dan versi konten. Tambahkan uji restore serta migrasi bila diperlukan.
-5. Daftarkan route/loader dan kartu aktif hanya setelah kasus lengkap lolos pengujian. Pertahankan label Segera hadir selama belum selesai.
-6. Catat sumber/lisensi aset dan minta guru meninjau materi sebelum mengklaim kesesuaian kurikulum.
+1. Buat `CaseDefinition` dengan ID stabil, versi, tokoh original, empat bukti investigasi dan bukti kelima saat musyawarah, pernyataan dan pasangan bukti-alasan, tiga solusi/alasan dan refleksi. Isi metadata `presentation` untuk tema, aset, tujuan, intro, konsekuensi dan informasi baru.
+2. Tambahkan aktivitas opsional dengan pilihan serta referensi sumber. Reducer memeriksa jawaban dan urutan investigasi sebelum bukti aktivitas dikoleksi.
+3. Daftarkan episode di `content/cases/index.ts`. Route, kartu, berkas bukti, game shell dan storage menggunakan definisi itu. Gunakan parameter `CaseDefinition` pada engine/selectors/storage; default tetap Episode 1 untuk kompatibilitas.
+4. Jalankan validator konten dan tes complete playthrough, retry, save/restore, reset per kasus dan tampilan ponsel. Nama/ID baru tidak boleh menimpa versi kasus lama tanpa migrasi yang diuji.
+5. Aktifkan kartu hanya untuk kasus yang selesai. Catat sumber/lisensi aset dan mintalah tinjauan guru sebelum mengklaim kesesuaian kurikulum.
 
 ## Batas versi ini
 
-Hanya episode pertama dapat dimainkan. Narasi rekaman, profil multipemain, panel guru berakun, dan empat episode lanjutan belum diimplementasikan. Pengujian browser lokal menggunakan Chrome; browser/perangkat fisik lain belum diuji. Hasil pemeriksaan aktual dicatat di [docs/VERIFICATION.md](docs/VERIFICATION.md). Aplikasi disiapkan untuk dijalankan lokal, belum dideploy.
+Tiga episode pertama dapat dimainkan. Suara untuk Ketua Kelas dan Antrean Kantin masih direncanakan. Narasi rekaman, profil multipemain, dan panel guru berakun belum diimplementasikan. Pengujian browser lokal menggunakan Chrome; browser/perangkat fisik lain belum diuji. Hasil pemeriksaan aktual dicatat di [docs/VERIFICATION.md](docs/VERIFICATION.md). Aplikasi disiapkan untuk dijalankan lokal, belum dideploy.
+
+
+### Progres episode berurutan
+
+Pemain baru mulai dari Episode 1. Selesaikan seluruh refleksi sampai hasil belajar untuk membuka Episode 2, lalu selesaikan Episode 2 untuk membuka Episode 3. Papan kasus menampilkan jumlah episode selesai dan syarat membuka cerita berikutnya. URL langsung tetap memeriksa prasyarat sebelum permainan dimuat atau disimpan.
+
+Riwayat tamat disimpan di `justice-room:progress` dengan `schemaVersion` dan `caseContentVersion` per episode, terpisah dari `justice-room:save:<caseId>`. Main ulang menghapus progres bermain episode terpilih setelah konfirmasi, tetapi mempertahankan episode yang sudah terbuka. Save hasil lama yang valid tetap diakui. Semua progres hanya berlaku di browser/perangkat yang sama; menghapus data browser menghapus riwayat ini.

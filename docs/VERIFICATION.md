@@ -44,3 +44,22 @@ Final checks after the review fixes:
 - Visual review: integrated investigation, testimony, decision, reflection and reconstruction frames on desktop/mobile. Compact phone choices no longer clip, and the active character label is not cropped behind the choice panel.
 
 Independent review findings (short-screen clipping, focus on disabled transition buttons, literal encoding artifacts) were corrected. Browser tests first reproduced the clipping and keyboard-focus issues, then passed after fixes. Main play requires no page scrolling at the tested sizes; optional evidence/settings/history dialogs may scroll deliberately. No new backend, account, dependency, invented culprit, save format or deployment was introduced.
+
+
+## Three complete replayable episodes - 2026-11-18
+
+Implemented Episode 2 (Giliran Piket yang Terlupakan) and Episode 3 (Semua Boleh Bermain), with original case data, original local SVG scenes, distinct activities, five clues each, evidence/reason review, decisions and consequences, three reflections and results. Episode 1's original facts remain unchanged.
+
+Replay is directly available on result screens, Menu Kasus and completed case cards. Confirmation resets only the selected episode's save and notes; other episodes and shared settings are preserved. Case keys are `justice-room:save:<caseId>`. Original Episode 1 schema-version-1 saves lacking activity state remain valid.
+
+Final checks:
+- `npm test`: **31/31 passed**. All three full journeys, activity prerequisite/forgery rejection, scoring deduplication, save validation, legacy-save compatibility, cross-case rejection, replay isolation, and the valid alternative Episode 2 E02 evidence/reason pair.
+- `npm run test:e2e`: **19/19 passed (1.5 minutes)**. Complete all three episodes through results, wrong activity/evidence/decision retries, mid-case reloads, replay and cancellation, preservation of another episode/settings, case-card replay navigation, original keyboard/focus and reduced-motion checks.
+- `npm run typecheck`: passed.
+- `npm run lint`: passed with no warnings.
+- `npm run build`: production compilation, TypeScript and page generation passed.
+- Visual/layout checks: frame and full source/choice/summary label bounds at 360x640, 768x800, 1440x900; case board at 360/768/1440 widths. Original scene and new cleaning/playground scenes inspected in screenshots.
+
+Independent read-only review found a valid alternative schedule-evidence pair that was being rejected. A failing unit test reproduced it, E02 was accepted alongside E04 with the correct reason, and the full tests then passed. Browser checks reproduced short-screen clipping; sequential source cards, separate feedback, shorter readable choices and explicit summary-icon sizing fixed those regressions.
+
+No new dependencies, accounts, cloud databases, analytics or deployment. Content remains proposed learning material awaiting teacher curriculum review. Chrome was exercised locally; other physical devices/browsers and a clean network installation remain outside the verified checks.

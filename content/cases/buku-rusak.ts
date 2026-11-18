@@ -1,6 +1,18 @@
 import type { CaseDefinition } from '../../lib/game/types.ts';
 export const bookCase: CaseDefinition = {
  id:'buku-rusak',version:1,title:'Misteri Buku Kelas yang Rusak',
+ presentation:{
+  episode:1,theme:'books',background:'/assets/reading-room.svg',
+  summary:'Bima dituduh merusak buku kelas. Apakah menjadi peminjam terakhir berarti ia bersalah?',topics:['Fakta & dugaan','Musyawarah'],
+  openingTitle:'Sebuah cerita yang belum lengkap.',openingSubtitle:'Sebuah buku rusak. Kita cari tahu bersama.',
+  decisionPrompt:'Apa usulmu agar buku terawat dan setiap teman diperlakukan adil? Pilih satu penyelesaian.',
+  resolutionTitle:'Kita rawat bukunya. Kita jaga pertemanannya.',
+  learningText:'Kemanusiaan berarti menghargai teman. Musyawarah berarti mendengarkan semua pihak. Hak membaca disertai kewajiban merawat buku bersama.',
+  reflectionPrompt:'Ada ide untuk menjaga buku kelas? Kamu boleh menuliskannya tanpa nama atau sekolahmu.',
+  completionText:'Kamu sudah mendengar semua cerita, memeriksa bukti, dan memilih merawat buku bersama. Kita tetap belum tahu siapa yang menyenggol botol. Kita tidak menuduh tanpa bukti. Salah memilih lalu mencoba lagi adalah bagian dari belajar.',
+  revelation:{title:'Cerita Sari menjadi lebih jelas.',facts:['09.00: buku dikembalikan dalam keadaan kering.','09.20: Sari melihat air mengenai buku.','Siapa yang menyenggol botol belum diketahui.']},
+  hints:['Perhatikan pernyataan kedua. Apakah peminjam terakhir membuktikan kondisi buku saat dikembalikan?','Cari orang yang melihat buku pukul 09.00. Tanya Lagi pada pernyataan ketiga juga membantu.','Pada S02, ajukan E04 dengan alasan Raka melihat buku kering. Pada S03, pilih Tanya Lagi untuk memperoleh E05.']
+ },
  characters:[
  {id:'nara',name:'Nara',role:'Teman detektifmu',color:'#147D78'},
  {id:'bima',name:'Bima',role:'Peminjam terakhir',color:'#527393'},
@@ -68,6 +80,11 @@ export function validateCase(c:CaseDefinition):string[]{
  for(const id of c.decisionRequirements.statementIds){
   const statement=c.statements.find(s=>s.id===id);
   if(!statement?.acceptedPairs.some(pair=>obtainableEvidence.has(pair.evidenceId)&&c.objectionReasons.some(r=>r.id===pair.reasonId)))errors.push('Unreachable objection');
+ }
+ if(!Number.isInteger(c.presentation.episode)||c.presentation.episode<1||!c.presentation.background.startsWith('/assets/'))errors.push('Invalid presentation');
+ if(c.activity){
+  unique('activity choices',c.activity.choices.map(x=>x.id));
+  if(!c.requiredEvidence.includes(c.activity.evidenceId)||!c.activity.choices.some(x=>x.id===c.activity!.acceptedId)||!c.activity.displayItems.length)errors.push('Invalid activity');
  }
  return errors;
 }

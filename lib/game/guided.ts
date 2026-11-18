@@ -1,11 +1,11 @@
 import {bookCase} from '../../content/cases/buku-rusak.ts';
-import type {GameState} from './types.ts';
-export function getInvestigationFocus(s:GameState){
- const all=bookCase.locations.flatMap(location=>location.hotspots.map(hotspot=>({location,hotspot})));
+import type {CaseDefinition,GameState} from './types.ts';
+export function getInvestigationFocus(s:GameState,c:CaseDefinition=bookCase){
+ const all=c.locations.flatMap(location=>location.hotspots.map(hotspot=>({location,hotspot})));
  const inspected=all.find(item=>item.hotspot.dialogue.id===s.dialogueNodeId&&s.evidenceIds.includes(item.hotspot.evidenceId));
- const pending=bookCase.requiredEvidence.find(id=>!s.evidenceIds.includes(id));
+ const pending=c.requiredEvidence.find(id=>!s.evidenceIds.includes(id));
  const focus=inspected??all.find(item=>item.hotspot.evidenceId===pending)??all[all.length-1];
- return {...focus,collected:s.evidenceIds.includes(focus.hotspot.evidenceId),ordinal:bookCase.requiredEvidence.indexOf(focus.hotspot.evidenceId)+1};
+ return {...focus,collected:s.evidenceIds.includes(focus.hotspot.evidenceId),ordinal:c.requiredEvidence.indexOf(focus.hotspot.evidenceId)+1};
 }
 export function paginateSubtitle(text:string,maxLength=145):string[]{
  const words=text.trim().split(/\s+/).filter(Boolean);if(!words.length)return [''];
@@ -15,9 +15,10 @@ export function paginateSubtitle(text:string,maxLength=145):string[]{
  }
  if(current)pages.push(current);return pages;
 }
-export function getNextStatement(s:GameState):string|null{
- if(s.statementId==='S01')return 'S02';
- if(s.statementId==='S02'&&s.resolvedStatementIds.includes('S02'))return 'S03';
- if(s.statementId==='S03'&&s.evidenceIds.includes('E05'))return 'S04';
- return null;
+export function getNextStatement(s:GameState,c:CaseDefinition=bookCase):string|null{
+ const current=c.statements.find(t=>t.id===s.statementId);
+ if(!current)return null;
+ if(c.decisionRequirements.statementIds.includes(current.id)&&!s.resolvedStatementIds.includes(current.id))return null;
+ if(current.unlockEvidenceId&&!s.evidenceIds.includes(current.unlockEvidenceId))return null;
+ return c.statements[c.statements.indexOf(current)+1]?.id??null;
 }

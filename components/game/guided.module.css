@@ -35,3 +35,6 @@
 
 .revelation{top:50%}.revelation li>svg{width:16px;height:16px;flex-shrink:0}
 @media(max-width:600px){.revelation li>svg{width:14px;height:14px}}
+
+.scene[data-ending=true] .actor{display:none}.scene[data-ending=true] .sceneContent{inset:42px 4% 12px}
+@media(max-width:600px){.scene[data-ending=true] .sceneContent{inset:40px 10px 8px}}

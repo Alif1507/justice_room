@@ -2,9 +2,11 @@
 import {useEffect,useReducer,useRef,useState} from 'react';
 import {useRouter} from 'next/navigation';
 import Link from 'next/link';
-import {ArrowLeft,BookOpen,Check,ClipboardList,Compass,Heart,History,Lightbulb,Menu,Settings,ShieldCheck} from 'lucide-react';
+import {ArrowLeft,BookOpen,Check,ClipboardList,Compass,History,Lightbulb,Menu,Settings,ShieldCheck} from 'lucide-react';
 import {bookCase} from '@/content/cases/buku-rusak';
 import {canDecide,hasInvestigation,phaseLabels,phaseOrder,reflectionsComplete,score} from '@/lib/game/selectors';
+import EndingScene from './EndingScene';
+import {getDecisionEnding} from '@/lib/game/endings';
 import {getInvestigationFocus,getNextStatement} from '@/lib/game/guided';
 import type {CaseDefinition,GameEvent} from '@/lib/game/types';
 import {Logo} from '../ui/Brand';
@@ -21,18 +23,20 @@ import s from './guided.module.css';
 import ui from '../ui/ui.module.css';
 
 type ModalName='menu'|'evidence'|'history'|'settings'|'reset'|'review'|null;
-type View={activity:boolean;activityReading:boolean;referenceIndex:number;activityFeedback:boolean;challenge:boolean;decisionFeedback:boolean;reflection:'auto'|'intro'|'question'|'notes';questionId:string|null;answeredQuestionId:string|null;answerId:string};
-type ViewEvent={type:'ACTIVITY';open:boolean}|{type:'ACTIVITY_FEEDBACK';open:boolean}|{type:'CHALLENGE';open:boolean}|{type:'DECISION_FEEDBACK';open:boolean}|{type:'QUESTION';id:string}|{type:'ANSWER';id:string;answerId:string}|{type:'NEXT_SOURCE'|'ACTIVITY_QUESTION'|'ACTIVITY_REFERENCE'|'NOTES'|'RESET'};
-const initialView:View={activity:false,activityReading:true,referenceIndex:0,activityFeedback:false,challenge:false,decisionFeedback:false,reflection:'auto',questionId:null,answeredQuestionId:null,answerId:''};
+type View={endingStep:number;activity:boolean;activityReading:boolean;referenceIndex:number;activityFeedback:boolean;challenge:boolean;decisionFeedback:boolean;reflection:'auto'|'intro'|'question'|'notes';questionId:string|null;answeredQuestionId:string|null;answerId:string};
+type ViewEvent={type:'ACTIVITY';open:boolean}|{type:'ACTIVITY_FEEDBACK';open:boolean}|{type:'CHALLENGE';open:boolean}|{type:'DECISION_FEEDBACK';open:boolean}|{type:'QUESTION';id:string}|{type:'ANSWER';id:string;answerId:string}|{type:'NEXT_ENDING'|'RESET_ENDING'|'NEXT_SOURCE'|'ACTIVITY_QUESTION'|'ACTIVITY_REFERENCE'|'NOTES'|'RESET'};
+const initialView:View={endingStep:0,activity:false,activityReading:true,referenceIndex:0,activityFeedback:false,challenge:false,decisionFeedback:false,reflection:'auto',questionId:null,answeredQuestionId:null,answerId:''};
 function viewReducer(state:View,event:ViewEvent):View{
  switch(event.type){
+  case 'NEXT_ENDING':return {...state,endingStep:Math.min(2,state.endingStep+1)};
+  case 'RESET_ENDING':return {...state,endingStep:0};
   case 'ACTIVITY':return {...state,activity:event.open,activityReading:true,referenceIndex:0,activityFeedback:false};
   case 'ACTIVITY_FEEDBACK':return {...state,activityFeedback:event.open};
   case 'NEXT_SOURCE':return {...state,referenceIndex:state.referenceIndex+1};
   case 'ACTIVITY_QUESTION':return {...state,activityReading:false};
   case 'ACTIVITY_REFERENCE':return {...state,activityReading:true,referenceIndex:0};
   case 'CHALLENGE':return {...state,challenge:event.open};
-  case 'DECISION_FEEDBACK':return {...state,decisionFeedback:event.open};
+  case 'DECISION_FEEDBACK':return {...state,decisionFeedback:event.open,endingStep:0};
   case 'QUESTION':return {...state,reflection:'question',questionId:event.id,answeredQuestionId:null,answerId:''};
   case 'ANSWER':return {...state,answeredQuestionId:event.id,answerId:event.answerId};
   case 'NOTES':return {...state,reflection:'notes'};
@@ -67,7 +71,9 @@ export default function GameShell({caseDefinition=bookCase}:{caseDefinition?:Cas
   const ticket=requestAnimationFrame(()=>{if(choiceFocusKey==='activity-reference'){frame.current?.querySelector<HTMLElement>('[data-activity-source]')?.focus();return;}if(choiceFocusKey==='activity-feedback'){frame.current?.querySelector<HTMLButtonElement>('[data-primary-action]')?.focus();return;}const selected=frame.current?.querySelector<HTMLInputElement>('input[type=radio]:checked');const first=frame.current?.querySelector<HTMLInputElement>('input[type=radio]');(selected??first)?.focus();});
   return()=>cancelAnimationFrame(ticket);
  },[ready,invalid,choiceFocusKey]);
- const resolution=caseDefinition.decisions.find(d=>d.id===caseDefinition.ending.decisionId)!;
+ const chosenEnding=getDecisionEnding(state,caseDefinition);
+ const inEnding=Boolean(chosenEnding&&(state.phase==='decision'||state.phase==='reflection'&&reflectionView==='intro'));
+ const endingBeat=chosenEnding?.beats[view.endingStep];
  let speech:StorySpeech={speakerId:'nara',text:''};let action:StoryAction={label:'Lanjutkan',onClick:()=>{}};
  let sceneContent:React.ReactNode=null;let location=caseDefinition.locations[0].name;let feedback=false;
  const contextRevealed=state.phase==='testimony'&&Boolean(currentStatement.unlockEvidenceId&&state.evidenceIds.includes(currentStatement.unlockEvidenceId))&&!view.challenge;
@@ -112,22 +118,24 @@ export default function GameShell({caseDefinition=bookCase}:{caseDefinition?:Cas
   }else action={label:'Lanjutkan Cerita',onClick:()=>{const next=getNextStatement(state,caseDefinition);if(next)send({type:'SELECT_STATEMENT',statementId:next});}};
  }else if(state.phase==='decision'){
   location='Ruang Musyawarah · Menyusun solusi';
-  if(view.decisionFeedback){
-   speech={speakerId:'nara',text:state.feedback||'Mari tinjau lagi solusi dan alasan kita.'};feedback=true;
-   sceneContent=<div className={s.storyPrompt}><Heart size={45}/><h2>Setiap teman perlu didengarkan.</h2><p>Kita masih bisa memilih solusi lain.</p></div>;
-   action={label:'Coba Solusi Lain',onClick:()=>{decisionDispatch({type:'RESET'});viewDispatch({type:'DECISION_FEEDBACK',open:false});}};
+  if(chosenEnding&&endingBeat){
+   speech=endingBeat;feedback=true;
+   sceneContent=<EndingScene ending={chosenEnding} step={view.endingStep}/>;
+   action=view.endingStep<chosenEnding.beats.length-1?{label:'Lanjutkan',onClick:()=>viewDispatch({type:'NEXT_ENDING'})}:{label:'Coba Solusi Lain',onClick:()=>{send({type:'RETRY_DECISION'});decisionDispatch({type:'RESET'});viewDispatch({type:'DECISION_FEEDBACK',open:false});}};
   }else{
    const choosing=decision.step==='choice';
    speech={speakerId:'bu-lila',text:choosing?caseDefinition.presentation.decisionPrompt:'Solusi perlu alasan yang sesuai dengan bukti. Mengapa kamu memilih penyelesaian itu?'};
    sceneContent=<ChoiceStage title={choosing?'Apa usul penyelesaianmu?':'Apa alasanmu?'} choices={choosing?caseDefinition.decisions:caseDefinition.decisionReasons} value={choosing?decision.choiceId:decision.reasonId} onChange={id=>decisionDispatch({type:choosing?'CHOOSE':'REASON',id})}/>;
-   action=choosing?{label:'Pilih Alasan',disabled:!decision.choiceId,onClick:()=>decisionDispatch({type:'NEXT'})}:{label:'Sampaikan Solusi',disabled:!decision.reasonId,onClick:()=>{const correct=caseDefinition.decisions.find(d=>d.id===decision.choiceId)?.acceptedReasonId===decision.reasonId;send({type:'SELECT_DECISION',decisionId:decision.choiceId,reasonId:decision.reasonId});if(!correct)viewDispatch({type:'DECISION_FEEDBACK',open:true});}};
+   action=choosing?{label:'Pilih Alasan',disabled:!decision.choiceId,onClick:()=>decisionDispatch({type:'NEXT'})}:{label:'Sampaikan Solusi',disabled:!decision.reasonId,onClick:()=>{const correct=caseDefinition.decisions.find(d=>d.id===decision.choiceId)?.acceptedReasonId===decision.reasonId;viewDispatch({type:'RESET_ENDING'});send({type:'SELECT_DECISION',decisionId:decision.choiceId,reasonId:decision.reasonId});if(!correct)viewDispatch({type:'DECISION_FEEDBACK',open:true});}};
   }
  }else if(state.phase==='reflection'){
   location='Kelas Kita · Sesudah musyawarah';
   if(reflectionView==='intro'){
-   speech={speakerId:'bu-lila',text:`${resolution.consequence} ${caseDefinition.presentation.learningText}`};
-   sceneContent=<div className={s.storyPrompt}><ShieldCheck size={50}/><h2>{caseDefinition.presentation.resolutionTitle}</h2><div className={s.sharedBooks}><BookOpen/><Heart/><BookOpen/></div></div>;
-   action={label:'Mulai Refleksi',onClick:()=>viewDispatch({type:'QUESTION',id:caseDefinition.reflections[0].id})};
+   if(chosenEnding&&endingBeat){
+    speech={...endingBeat,text:endingBeat.text+(view.endingStep===chosenEnding.beats.length-1?` ${caseDefinition.presentation.learningText}`:'')};
+    sceneContent=<EndingScene ending={chosenEnding} step={view.endingStep}/>;
+    action=view.endingStep<chosenEnding.beats.length-1?{label:'Lanjutkan',onClick:()=>viewDispatch({type:'NEXT_ENDING'})}:{label:'Mulai Refleksi',onClick:()=>viewDispatch({type:'QUESTION',id:caseDefinition.reflections[0].id})};
+   }
   }else if(reflectionView==='notes'){
    speech={speakerId:'nara',text:`${caseDefinition.presentation.reflectionPrompt} Catatan tidak dinilai dan hanya tersimpan di perangkatmu.`};
    sceneContent=<div className={s.notes}><label htmlFor="reflection-note">Catatan kecilmu (boleh dikosongkan)</label><textarea id="reflection-note" maxLength={2000} value={state.reflectionNote} onChange={e=>dispatch({type:'SET_NOTE',note:e.target.value})} placeholder="Tulis idemu tanpa nama atau sekolahmu."/><small>Tidak dinilai. Tidak diunggah.</small></div>;
@@ -140,7 +148,7 @@ export default function GameShell({caseDefinition=bookCase}:{caseDefinition?:Cas
  }else{
   location=`Episode ${String(caseDefinition.presentation.episode).padStart(2,'0')} · Selesai`;
   speech={speakerId:'nara',text:caseDefinition.presentation.completionText};
-  sceneContent=<ResultScene score={score(state)}/>;
+  sceneContent=<ResultScene score={score(state)} endingTitle={chosenEnding?.title}/>;
   action={label:'Kembali ke Papan Kasus',onClick:()=>router.push('/kasus')};
  }
  const phaseTitle=({intro:'Sebelum menyimpulkan, dengarkan.',investigation:'Satu petunjuk, satu langkah.',testimony:'Dengarkan semua sisi.',decision:'Apa penyelesaian yang adil?',reflection:'Apa yang kita pelajari?',result:'Keadilan dimulai dari mendengarkan.'})[state.phase];
@@ -150,9 +158,9 @@ export default function GameShell({caseDefinition=bookCase}:{caseDefinition?:Cas
   <div className={s.progress}><span>{phaseLabels[state.phase]}</span><div aria-label="Tahap petualangan">{phaseOrder.map((p,i)=><span key={p} aria-current={state.phase===p?'step':undefined} title={phaseLabels[p]} data-complete={i<phaseOrder.indexOf(state.phase)}/>)}</div><span>{state.phase==='investigation'?`Petunjuk ${focus.ordinal} / 4`:state.phase==='testimony'?`Cerita ${caseDefinition.statements.indexOf(currentStatement)+1} / 4`:'Pelan-pelan, tanpa batas waktu'}</span></div>
   {(storageError||settingsError)&&<p role="alert" className={s.storageWarning}>Penyimpanan browser tidak tersedia. Kamu tetap bisa bermain, tetapi progres sesi ini mungkin tidak tersimpan.</p>}
   {invalid?<main className={s.invalid}><ShieldCheck size={44}/><h1>Progres belum bisa dibuka.</h1><p>Data tersimpan rusak atau memakai versi berbeda. Data lama belum dihapus.</p><button className={ui.dangerButton} onClick={()=>setModal('reset')}>Mulai Ulang Kasus</button><Link className={ui.secondary} href="/">Kembali ke Beranda</Link></main>:
-   <main ref={frame} className={s.theater} role="region" aria-label="Panggung Cerita" data-phase={state.phase}>
-    <h1 ref={heading} tabIndex={-1} className={s.screenTitle}>{phaseTitle}</h1>
-    <CaseScene caseDefinition={caseDefinition} revelationActive={contextRevealed&&!reconstruction} state={state} location={location} speakerId={speech.speakerId} expression={speech.expression} evidenceId={state.phase==='investigation'?focus.hotspot.evidenceId:undefined} collected={state.phase==='investigation'&&focus.collected} onInspect={inspectCurrent} reconstruction={reconstruction}>
+   <main ref={frame} className={s.theater} role="region" aria-label="Panggung Cerita" data-phase={state.phase} data-ending={chosenEnding?.id} data-ending-beat={inEnding?view.endingStep+1:undefined}>
+    <h1 ref={heading} tabIndex={-1} className={s.screenTitle}>{inEnding?'Akhir cerita pilihanmu.':phaseTitle}</h1>
+    <CaseScene endingActive={inEnding} caseDefinition={caseDefinition} revelationActive={contextRevealed&&!reconstruction} state={state} location={location} speakerId={speech.speakerId} expression={speech.expression} evidenceId={state.phase==='investigation'?focus.hotspot.evidenceId:undefined} collected={state.phase==='investigation'&&focus.collected} onInspect={inspectCurrent} reconstruction={reconstruction}>
      {sceneContent}
     </CaseScene>
     {moment?.kind==='objection'&&motionEnabled&&<div className={s.objectionCue} key={moment.sequence} aria-hidden="true">{moment.title}</div>}
@@ -161,7 +169,7 @@ export default function GameShell({caseDefinition=bookCase}:{caseDefinition?:Cas
     {view.challenge&&objection.step==='reason'&&<button className={s.backChoice} onClick={()=>objectionDispatch({type:'BACK'})}><ArrowLeft size={13}/> Ubah Bukti</button>}
     {state.phase==='decision'&&decision.step==='reason'&&!view.decisionFeedback&&<button className={s.backChoice} onClick={()=>decisionDispatch({type:'BACK'})}><ArrowLeft size={13}/> Ubah Solusi</button>}
     {state.phase==='result'&&<button className={s.replayResult} onClick={()=>setModal('reset')}><History size={15}/> Mainkan Ulang Episode</button>}
-    <StoryCaption caseDefinition={caseDefinition} speech={speech} action={action} instant={instant} feedback={feedback}/>
+    <StoryCaption caseDefinition={caseDefinition} speech={speech} action={action} instant={instant} feedback={feedback} chapterLabel={inEnding?`AKHIR CERITA | ${view.endingStep+1} / 3`:undefined}/>
    </main>}
   {modal&&<Modal title={modal==='menu'?'Menu Kasus':modal==='evidence'?'Berkas Bukti':modal==='history'?'Riwayat Percakapan':modal==='settings'?'Pengaturan':modal==='review'?'Tinjau Petunjuk':'Mulai ulang petualangan?'} onClose={()=>setModal(null)}>
    {modal==='menu'&&<div className={s.menuList}><button onClick={()=>setModal('reset')}><History size={20}/> Mainkan Ulang Episode</button><button onClick={()=>setModal('settings')}><Settings size={20}/> Pengaturan</button><button onClick={()=>setModal('history')}><History size={20}/> Riwayat Percakapan</button>{state.phase==='testimony'&&<button onClick={()=>{send({type:'HINT'});setModal(null);}}><Lightbulb size={20}/> Petunjuk</button>}{(state.phase==='testimony'||state.phase==='decision')&&<button onClick={()=>{send({type:'BACK_INVESTIGATION'});resetInterface();setModal(null);}}><SearchIcon/> Kembali Investigasi</button>}{state.phase==='investigation'&&state.evidenceIds.length>0&&<button onClick={()=>setModal('review')}><ClipboardList size={20}/> Tinjau Petunjuk</button>}<Link href="/panduan"><BookOpen size={20}/> Panduan & Tujuan Belajar</Link><Link href="/kasus"><ArrowLeft size={20}/> Papan Kasus</Link><p>Musyawarah pendidikan di sekolah fiktif. Progres hanya tersimpan di browser ini.</p></div>}

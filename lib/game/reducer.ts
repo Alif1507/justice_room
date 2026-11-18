@@ -49,6 +49,7 @@ export function reducer(s:GameState,e:GameEvent,c:CaseDefinition=bookCase):GameS
  const pair=t.acceptedPairs.find(p=>p.evidenceId===e.evidenceId&&p.reasonId===e.reasonId);
  return pair?update(s,{resolvedStatementIds:unique(s.resolvedStatementIds,t.id),feedback:pair.feedback}):update(s,{feedback:c.id==='buku-rusak'&&t.id==='S02'?({E01:'Catatan peminjaman menunjukkan waktu pengembalian, tetapi tidak mencatat apakah buku basah. Menjadi peminjam terakhir belum membuktikan penyebab kerusakan.',E02:'Buku basah menunjukkan kondisi saat ditemukan, bukan kondisinya pukul 09.00. Cari pengamatan saat buku dikembalikan.',E03:'Foto membantu urutan waktu, tetapi gunakan keterangan orang yang melihat buku saat dikembalikan. Coba bukti lain beserta alasan yang sesuai.',E04:'Keterangan Raka menyebut buku kering saat dikembalikan. Pilih alasan yang menjelaskan pengamatan itu. Peminjam terakhir bukan bukti siapa yang menyebabkan kerusakan.',E05:'Keterangan Sari menjelaskan tumpahan pukul 09.20. Untuk menguji keadaan buku saat pengembalian, pertimbangkan orang yang melihatnya pukul 09.00.'}[e.evidenceId]??t.incorrectFeedback):t.incorrectFeedback});}
  case 'ENTER_DECISION':return s.phase==='testimony'&&canDecide(s,c)?update(s,{phase:'decision',feedback:''}):s;
+ case 'RETRY_DECISION':return s.phase==='decision'&&canDecide(s,c)?update(s,{decisionId:undefined,decisionReasonId:undefined,feedback:''}):s;
  case 'SELECT_DECISION':{
  if(s.phase!=='decision'||!canDecide(s,c))return s;
  const d=c.decisions.find(d=>d.id===e.decisionId);

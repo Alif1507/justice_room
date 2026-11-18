@@ -63,3 +63,26 @@ Final checks:
 Independent read-only review found a valid alternative schedule-evidence pair that was being rejected. A failing unit test reproduced it, E02 was accepted alongside E04 with the correct reason, and the full tests then passed. Browser checks reproduced short-screen clipping; sequential source cards, separate feedback, shorter readable choices and explicit summary-icon sizing fixed those regressions.
 
 No new dependencies, accounts, cloud databases, analytics or deployment. Content remains proposed learning material awaiting teacher curriculum review. Chrome was exercised locally; other physical devices/browsers and a clean network installation remain outside the verified checks.
+
+
+## 2026-11-18 - Progres episode berurutan
+
+- Episode 1 tersedia dari awal; hasil belajar Episode 1 membuka Episode 2, dan hasil Episode 2 membuka Episode 3. Papan kasus menampilkan bar progres, jumlah episode selesai, ikon kunci, serta syarat episode berikutnya.
+- URL langsung diperiksa sebelum game shell dimuat: episode terkunci tidak membuat save kosong atau menampilkan permainan.
+- Riwayat tamat memakai key terpisah dengan versi skema/konten. Save hasil lama yang valid tetap dikenali. Main ulang mempertahankan episode yang sudah terbuka; kegagalan menyimpan riwayat membatalkan penghapusan save.
+- `npm test`: 35/35 lolos, termasuk migrasi, urutan pembukaan, save palsu/rusak, replay dan kegagalan penyimpanan.
+- `npm run test:e2e`: 21/21 lolos di Chrome lokal, termasuk alur ketiga episode, kartu terkunci, URL langsung, refresh, serta replay yang mempertahankan pembukaan episode.
+- `npm run typecheck`, `npm run lint`, `npm run build`: berhasil.
+- Screenshot aktual papan kasus dan layar terkunci diperiksa pada lebar 360, 768 dan 1440 piksel; tidak ada luapan horizontal. Progres tetap lokal pada browser yang sama. Belum dideploy.
+
+
+## 2026-11-18 - Ending bercabang
+
+- Sembilan ending utama: setiap pilihan solusi pada ketiga episode memiliki judul, motif visual, pesan akibat, dan tiga bagian dialog tersendiri. Tiga adegan tambahan menangani solusi peduli dengan alasan yang belum sesuai.
+- Pilihan yang belum adil memperlihatkan kemungkinan akibat dan dapat dicoba ulang. Retry mempertahankan bukti serta milestone; hanya solusi dan alasan yang diterima menuju refleksi/hasil dan pembukaan episode berikutnya. Episode buku tetap tidak mengungkap pelaku tumpahan.
+- Ending diturunkan dari keputusan/alasan tersimpan, sehingga save lama kompatibel. Reload pada ending yang belum adil kembali ke awal adegan yang sama. Judul ending berhasil tampil pada hasil belajar.
+- `npm test`: 39/39 lolos, termasuk pemilihan semua cabang, alasan keliru, validasi karakter/ID ending, restore dan retry.
+- `npm run test:e2e`: 24/24 lolos di Chrome lokal. Semua sembilan pilihan solusi dan tiga cabang alasan diuji, termasuk reload, retry, reduced motion, keyboard, ukuran 360/768/1440 piksel, serta seluruh regresi permainan/progres.
+- `npm run typecheck`, `npm run lint`, dan `npm run build`: berhasil; lint tanpa peringatan. `git diff --check` bersih.
+- Screenshot aktual ending diperiksa pada ponsel 360x640, tablet 768x640, desktop 1440x640; judul, akibat dan subtitle tetap dalam frame. Layar hasil Episode 3 juga diperiksa di 360x640.
+- Review kode independen tidak menemukan masalah material pada pemilihan ending, penyimpanan, retry, integritas cerita, dan syarat tamat. Belum dideploy; browser/perangkat fisik lain belum diuji.

@@ -17,3 +17,6 @@ Semua aset visual original merupakan aset implementasi versi ini, bukan placehol
 - `public/assets/chores-room.svg`: ilustrasi SVG original yang dibuat untuk Episode 2 dalam proyek ini. Ruang kelas Indonesia dengan papan jadwal, alat piket dan meja; tidak memakai aset luar.
 - `public/assets/playground.svg`: ilustrasi SVG original yang dibuat untuk Episode 3. Halaman sekolah, lapangan bola, batas area dan bangku/congklak yang terpisah; tidak memakai foto atau gambar permainan lain.
 - Bukti jadwal, ikon waktu/tugas dan kebutuhan bermain di `CaseScene.tsx` dirangkai dari CSS dan ikon Lucide lokal. Seluruh aset baru dipakai langsung dalam episode lengkap, bukan kartu placeholder.
+
+
+- Adegan ending bercabang (`components/game/EndingScene.tsx`, `ending.module.css`): komposisi original tokoh SVG lokal, ikon Lucide yang sudah dipakai proyek, dan animasi CSS. Tidak memakai aset, musik, karakter, atau dialog dari game lain. Cerita ending ditulis khusus untuk Justice Room di `content/endings.ts`.

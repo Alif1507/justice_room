@@ -1,3 +1,4 @@
+import {bookEndings} from '../endings.ts';
 import type { CaseDefinition } from '../../lib/game/types.ts';
 export const bookCase: CaseDefinition = {
  id:'buku-rusak',version:1,title:'Misteri Buku Kelas yang Rusak',
@@ -45,9 +46,10 @@ export const bookCase: CaseDefinition = {
  {id:'S04',speakerId:'sari',text:'Kita belum tahu siapa yang menyenggol botol.',pressText:'Benar, aku tidak melihat siapa yang menyenggolnya. Aku juga ingin kita merawat buku dan mencegah kejadian serupa.',acceptedPairs:[],incorrectFeedback:'Pernyataan ini sesuai batas bukti kita. Mengakui hal yang belum diketahui adalah sikap jujur dan adil.'}],
  objectionReasons:[{id:'raka-kering',text:'Raka melihat buku kering saat dikembalikan pukul 09.00.'},{id:'terakhir-salah',text:'Peminjam terakhir pasti menyebabkan semua kerusakan.'},{id:'foto-pelaku',text:'Foto botol menunjukkan siapa yang menumpahkannya.'}],
  decisions:[
- {id:'bima',text:'Bima harus bertanggung jawab karena ia peminjam terakhir.',consequence:'Bima merasa tidak didengarkan. Catatan peminjaman tidak membuktikan penyebab kerusakan. Mari tinjau bukti lagi.'},
- {id:'sari',text:'Sari harus disalahkan karena botol ada di dekatnya.',consequence:'Tuduhan baru muncul tanpa bukti pelaku. Posisi benda tidak cukup untuk memastikan siapa yang menjatuhkan botol.'},
- {id:'bersama',text:'Akui pelaku belum diketahui. Rawat buku bersama dengan bantuan guru dan pisahkan minuman dari rak.',acceptedReasonId:'urutan-air',consequence:'Teman-teman merasa didengarkan. Bu Lila membantu merawat buku, dan kelas menyiapkan tempat minuman jauh dari rak. Tidak ada yang dipaksa mengaku.'}],
+ {id:'bima',outcome:bookEndings['bima'],text:'Bima harus bertanggung jawab karena ia peminjam terakhir.',consequence:'Bima merasa tidak didengarkan. Catatan peminjaman tidak membuktikan penyebab kerusakan. Mari tinjau bukti lagi.'},
+ {id:'sari',outcome:bookEndings['sari'],text:'Sari harus disalahkan karena botol ada di dekatnya.',consequence:'Tuduhan baru muncul tanpa bukti pelaku. Posisi benda tidak cukup untuk memastikan siapa yang menjatuhkan botol.'},
+ {id:'bersama',outcome:bookEndings['bersama'],text:'Akui pelaku belum diketahui. Rawat buku bersama dengan bantuan guru dan pisahkan minuman dari rak.',acceptedReasonId:'urutan-air',consequence:'Teman-teman merasa didengarkan. Bu Lila membantu merawat buku, dan kelas menyiapkan tempat minuman jauh dari rak. Tidak ada yang dipaksa mengaku.'}],
+ reasonEnding:bookEndings.reconsider,
  decisionReasons:[{id:'urutan-air',text:'Bukti menunjukkan buku terkena air setelah dikembalikan, tetapi belum menunjukkan siapa yang menjatuhkan botol.'},{id:'banyak-tuduhan',text:'Yang paling banyak dituduh pasti salah.'},{id:'tidak-dengar',text:'Tidak perlu mendengarkan semua pihak.'}],
  reflections:[
  {id:'fakta',question:'Apa perbedaan fakta dan dugaan?',choices:[{id:'diamati',text:'Fakta didukung pengamatan atau bukti; dugaan masih perlu diperiksa.'},{id:'dugaan',text:'Dugaan menjadi fakta kalau banyak orang mengatakannya.'}],acceptedIds:['diamati'],explanation:'Keterangan Raka tentang buku kering adalah pengamatan saksi. Menyalahkan Bima hanya karena terakhir meminjam adalah dugaan.'},
@@ -65,6 +67,15 @@ export function validateCase(c:CaseDefinition):string[]{
  unique('statements',c.statements.map(x=>x.id));unique('decisions',c.decisions.map(x=>x.id));
  unique('reasons',[...c.objectionReasons,...c.decisionReasons].map(x=>x.id));
  unique('reflections',c.reflections.map(x=>x.id));
+ const endings=[...c.decisions.map(d=>d.outcome),c.reasonEnding];
+ unique('endings',endings.map(e=>e.id));unique('ending nodes',endings.flatMap(e=>e.beats.map(b=>b.id)));
+ for(const ending of endings){
+  if(!ending.title||!ending.takeaway||ending.beats.length!==3)errors.push('Invalid ending');
+  for(const beat of ending.beats)if(!c.characters.some(p=>p.id===beat.speakerId))errors.push('Invalid ending speaker');
+  if(ending.cast.some(id=>!c.characters.some(p=>p.id===id)))errors.push('Invalid ending cast');
+ }
+ for(const d of c.decisions)if(d.outcome.mood!==(d.id===c.ending.decisionId?'hopeful':'unresolved'))errors.push('Invalid ending mood');
+ if(c.reasonEnding.mood!=='rethink')errors.push('Invalid reason ending');
  const e=c.evidence.map(x=>x.id),p=c.characters.map(x=>x.id);
  for(const n of [...c.nodes,...c.locations.flatMap(l=>l.hotspots.map(h=>h.dialogue))]) if(!has(p,n.speakerId)) errors.push('Invalid speaker');
  for(const l of c.locations)for(const h of l.hotspots)if(!has(e,h.evidenceId))errors.push('Invalid hotspot');

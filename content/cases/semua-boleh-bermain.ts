@@ -1,3 +1,4 @@
+import {playEndings} from '../endings.ts';
 import type { CaseDefinition } from '../../lib/game/types.ts';
 
 export const playCase: CaseDefinition = {
@@ -71,9 +72,10 @@ export const playCase: CaseDefinition = {
   {id:'semua-bola',text:'Semua teman pasti menyukai bola kalau diminta ikut.'},
   {id:'waktu-membuktikan',text:'Jadwal 20 menit membuktikan siapa yang ingin berteman.'}],
  decisions:[
-  {id:'wajib-bola',text:'Wajibkan semua teman ikut bola sepanjang istirahat.',consequence:'Kebutuhan bergerak didengar, tetapi pilihan Sari diabaikan. Berteman tidak harus melalui satu permainan. Coba aturan yang memberi pilihan.'},
-  {id:'larang-bola',text:'Larang bola sepanjang istirahat agar semua bermain tenang.',consequence:'Tempat menjadi tenang, tetapi kebutuhan Bima untuk bergerak tidak mendapat kesempatan. Dua kebutuhan dapat dibicarakan tanpa melarang salah satunya sepanjang waktu.'},
-  {id:'giliran-adil',text:'Bola 10 menit, permainan tenang 10 menit. Bangku tetap terbuka; teman bebas memilih.',acceptedReasonId:'dua-kebutuhan',consequence:'Bu Lila membantu menjaga batas aman. Bola mendapat giliran, lalu lapangan dipakai permainan tenang. Bangku tetap terbuka. Teman boleh memilih atau berganti kegiatan. Kelas meninjau aturan setelah mencoba.'}],
+  {id:'wajib-bola',outcome:playEndings['wajib-bola'],text:'Wajibkan semua teman ikut bola sepanjang istirahat.',consequence:'Kebutuhan bergerak didengar, tetapi pilihan Sari diabaikan. Berteman tidak harus melalui satu permainan. Coba aturan yang memberi pilihan.'},
+  {id:'larang-bola',outcome:playEndings['larang-bola'],text:'Larang bola sepanjang istirahat agar semua bermain tenang.',consequence:'Tempat menjadi tenang, tetapi kebutuhan Bima untuk bergerak tidak mendapat kesempatan. Dua kebutuhan dapat dibicarakan tanpa melarang salah satunya sepanjang waktu.'},
+  {id:'giliran-adil',outcome:playEndings['giliran-adil'],text:'Bola 10 menit, permainan tenang 10 menit. Bangku tetap terbuka; teman bebas memilih.',acceptedReasonId:'dua-kebutuhan',consequence:'Bu Lila membantu menjaga batas aman. Bola mendapat giliran, lalu lapangan dipakai permainan tenang. Bangku tetap terbuka. Teman boleh memilih atau berganti kegiatan. Kelas meninjau aturan setelah mencoba.'}],
+ reasonEnding:playEndings.reconsider,
  decisionReasons:[
   {id:'dua-kebutuhan',text:'Kebutuhan berbeda sama-sama didengar; waktu dibagi dan teman tetap boleh memilih.'},
   {id:'suara-terkeras',text:'Permainan pilihan teman yang bersuara paling keras harus selalu menang.'},

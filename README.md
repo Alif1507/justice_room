@@ -111,3 +111,16 @@ Tiga episode pertama dapat dimainkan. Suara untuk Ketua Kelas dan Antrean Kantin
 Pemain baru mulai dari Episode 1. Selesaikan seluruh refleksi sampai hasil belajar untuk membuka Episode 2, lalu selesaikan Episode 2 untuk membuka Episode 3. Papan kasus menampilkan jumlah episode selesai dan syarat membuka cerita berikutnya. URL langsung tetap memeriksa prasyarat sebelum permainan dimuat atau disimpan.
 
 Riwayat tamat disimpan di `justice-room:progress` dengan `schemaVersion` dan `caseContentVersion` per episode, terpisah dari `justice-room:save:<caseId>`. Main ulang menghapus progres bermain episode terpilih setelah konfirmasi, tetapi mempertahankan episode yang sudah terbuka. Save hasil lama yang valid tetap diakui. Semua progres hanya berlaku di browser/perangkat yang sama; menghapus data browser menghapus riwayat ini.
+
+
+### Ending berdasarkan pilihan
+
+Setiap episode memiliki tiga ending utama, masing-masing mengikuti pilihan solusi, dengan tiga adegan dialog dan motif animasi berbeda. Pilihan solusi yang baik tetapi alasan belum sesuai membuka adegan peninjauan alasan tersendiri. Total: sembilan ending utama dan tiga adegan peninjauan alasan.
+
+- Episode 1: Suara Bima Terlewat; Pertanyaan Berganti Tuduhan; Rak Buku, Harapan Baru.
+- Episode 2: Bima Bekerja Sendiri; Kelas Menunggu Dirawat; Jadwal Jelas, Kerja Tuntas.
+- Episode 3: Satu Permainan Tanpa Pilihan; Lapangan Kehilangan Tawa; Berbeda Permainan, Tetap Berteman.
+
+Ending yang belum adil ditandai sebagai kemungkinan akibat pilihan dan menyediakan Coba Solusi Lain. Tidak ada nyawa atau pengurangan bukti. Hanya solusi dan alasan yang diterima menuju refleksi serta hasil belajar untuk membuka episode berikutnya. Judul ending juga tampil pada hasil. Mainkan ulang episode untuk mencoba pilihan lain.
+
+Dialog ending, tokoh, judul, dan motif disimpan di `content/endings.ts`; setiap pilihan solusi merujuk `outcome`, dan `reasonEnding` menangani alasan yang belum sesuai. `lib/game/endings.ts` memilih cabang dari `decisionId` dan `decisionReasonId` tersimpan. Save lama tetap kompatibel; reload mengulang adegan ending tersebut dari awal tanpa menghapus bukti atau skor. Gerakan mengikuti pengaturan dan preferensi reduced motion.

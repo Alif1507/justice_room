@@ -1,3 +1,4 @@
+import {choreEndings} from '../endings.ts';
 import type { CaseDefinition } from '../../lib/game/types.ts';
 
 export const choreCase: CaseDefinition = {
@@ -82,10 +83,11 @@ export const choreCase: CaseDefinition = {
   {id:'lama-berlaku',text:'Jadwal lama tetap berlaku meskipun sudah diganti.'}
  ],
  decisions:[
-  {id:'bima-sendiri',text:'Minta Bima piket sendiri berdasarkan jadwal lama.',consequence:'Pembagian terbaru diabaikan dan beban Bima bertambah. Jadwal lama sudah diganti. Periksa lagi tanggung jawab setiap teman.'},
-  {id:'abaikan-piket',text:'Batalkan piket dan biarkan kelas tetap kotor.',consequence:'Kelas tetap kotor dan tugas belum selesai. Kebutuhan istirahat perlu didengar, lalu disepakati waktu dan bantuan untuk menuntaskan pekerjaan.'},
-  {id:'rencana-bersama',text:'Tuntaskan tugas sesuai jadwal, saling bantu, cek bersama, dan pasang satu jadwal terbaru.',acceptedReasonId:'tugas-dan-waktu',consequence:'Bima menuntaskan papan, Sari merapikan hasil sapuan, dan Raka membuang sampah setelah kembali 12.20. Nara menawarkan bantuan. Bu Lila mendampingi cek akhir yang disepakati. Jadwal lama disimpan di arsip, dan jadwal terbaru ditandai jelas. Teman tetap bertanggung jawab tanpa dipermalukan.'}
+  {id:'bima-sendiri',outcome:choreEndings['bima-sendiri'],text:'Minta Bima piket sendiri berdasarkan jadwal lama.',consequence:'Pembagian terbaru diabaikan dan beban Bima bertambah. Jadwal lama sudah diganti. Periksa lagi tanggung jawab setiap teman.'},
+  {id:'abaikan-piket',outcome:choreEndings['abaikan-piket'],text:'Batalkan piket dan biarkan kelas tetap kotor.',consequence:'Kelas tetap kotor dan tugas belum selesai. Kebutuhan istirahat perlu didengar, lalu disepakati waktu dan bantuan untuk menuntaskan pekerjaan.'},
+  {id:'rencana-bersama',outcome:choreEndings['rencana-bersama'],text:'Tuntaskan tugas sesuai jadwal, saling bantu, cek bersama, dan pasang satu jadwal terbaru.',acceptedReasonId:'tugas-dan-waktu',consequence:'Bima menuntaskan papan, Sari merapikan hasil sapuan, dan Raka membuang sampah setelah kembali 12.20. Nara menawarkan bantuan. Bu Lila mendampingi cek akhir yang disepakati. Jadwal lama disimpan di arsip, dan jadwal terbaru ditandai jelas. Teman tetap bertanggung jawab tanpa dipermalukan.'}
  ],
+ reasonEnding:choreEndings.reconsider,
  decisionReasons:[
   {id:'tugas-dan-waktu',text:'Jadwal terbaru membagi kewajiban; waktu Raka disepakati. Tugas tertunda perlu dituntaskan dengan kerja sama.'},
   {id:'nama-lama',text:'Satu nama di jadwal lama berarti ia harus mengerjakan semua tugas selamanya.'},
